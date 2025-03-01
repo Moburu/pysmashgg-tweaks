@@ -1,6 +1,6 @@
 # TOURNAMENTS.PY AND EVENTS.PY
 
-# Filtering for the player_id function 
+# Filtering for the player_id function
 def player_id_filter(response, player_name):
     if response['data']['event']['entrants']['nodes'] is None:
         return
@@ -99,14 +99,14 @@ def show_with_brackets_all_filter(response):
         event['bracketIds'] = bracket_ids
 
     data['events'] = response['data']['tournament']['events']
-    
+
     return data
 
-# Filter for the show_events function 
+# Filter for the show_events function
 def show_events_filter(response):
     if response['data']['tournament'] is None:
         return
-    
+
     event_list = []
     for event in response['data']['tournament']['events']:
         cur_event = {}
@@ -128,8 +128,8 @@ def show_sets_filter(response):
 
     if response['data']['event']['sets']['nodes'] is None:
         return
-        
-    
+
+
     sets = [] # Need for return at the end
 
     for node in response['data']['event']['sets']['nodes']:
@@ -160,13 +160,13 @@ def show_sets_filter(response):
                     entrant2_chars.append(game['selections'][0]['selectionValue'])
                     if len(game['selections']) > 1:
                         entrant1_chars.append(game['selections'][1]['selectionValue'])
-                    
+
                 game_winners_ids.append(game['winnerId'])
 
             cur_set['entrant1Chars'] = entrant1_chars
             cur_set['entrant2Chars'] = entrant2_chars
             cur_set['gameWinners'] = game_winners_ids
-        
+
         # Next 2 if/else blocks make sure there's a result in, sometimes DQs are weird
         # there also could be ongoing matches
         match_done = True
@@ -177,7 +177,7 @@ def show_sets_filter(response):
             cur_set['entrant1Score'] = node['slots'][0]['standing']['stats']['score']['value']
         else:
             cur_set['entrant1Score'] = -1
-        
+
         if node['slots'][1]['standing'] is None:
             cur_set['entrant2Score'] = -1
             match_done = False
@@ -203,10 +203,12 @@ def show_sets_filter(response):
             cur_set['completed'] = False
 
         cur_set['fullRoundText'] = node['fullRoundText']
+        cur_set['round'] = node['round']
 
         if node['phaseGroup'] is not None:
             cur_set['bracketName'] = node['phaseGroup']['phase']['name']
             cur_set['bracketId'] = node['phaseGroup']['id']
+            cur_set['phaseOrder'] = node['phaseGroup']['phase']['phaseOrder']
         else:
             cur_set['bracketName'] = None
             cur_set['bracketId'] = None
@@ -228,7 +230,7 @@ def show_sets_filter(response):
                     cur_player['playerId'] = None
                     cur_player['playerTag'] = None
                     cur_player['entrantId'] = node['slots'][j]['entrant']['id']
-            
+
             cur_set['entrant' + str(j+1) + 'Players'] = players
 
         sets.append(cur_set) # Adding that specific set onto the large list of sets
@@ -242,9 +244,9 @@ def show_entrants_filter(response):
 
     if response['data']['event']['standings']['nodes'] is None:
         return
-    
+
     entrants = []    # Need for return at the end
-    
+
     for node in response['data']['event']['standings']['nodes']:
         cur_entrant = {}
         cur_entrant['entrantId'] = node['entrant']['id']
@@ -317,7 +319,7 @@ def show_entrant_sets_filter(response):
 
     if response['data']['event']['sets']['nodes'] is None:
         return
-    
+
     sets = [] # Need for return at the end
 
     for node in response['data']['event']['sets']['nodes']:
@@ -327,7 +329,7 @@ def show_entrant_sets_filter(response):
         cur_set['entrant2Id'] = node['slots'][1]['entrant']['id']
         cur_set['entrant1Name'] = node['slots'][0]['entrant']['name']
         cur_set['entrant2Name'] = node['slots'][1]['entrant']['name']
-        
+
         # Next 2 if/else blocks make sure there's a result in, sometimes DQs are weird
         match_done = True
         if node['slots'][0]['standing'] is None:
@@ -337,7 +339,7 @@ def show_entrant_sets_filter(response):
             cur_set['entrant1Score'] = node['slots'][0]['standing']['stats']['score']['value']
         else:
             cur_set['entrant1Score'] = -1
-        
+
         if node['slots'][1]['standing'] is None:
             cur_set['entrant2Score'] = -1
             match_done = False
@@ -393,7 +395,7 @@ def show_head_to_head_filter(response, player2_name):
             cur_set['entrant2Id'] = node['slots'][1]['entrant']['id']
             cur_set['entrant1Name'] = node['slots'][0]['entrant']['name']
             cur_set['entrant2Name'] = node['slots'][1]['entrant']['name']
-            
+
             # Next 2 if/else blocks make sure there's a result in, sometimes DQs are weird
             match_done = True
             if node['slots'][0]['standing'] is None:
@@ -403,7 +405,7 @@ def show_head_to_head_filter(response, player2_name):
                 cur_set['entrant1Score'] = node['slots'][0]['standing']['stats']['score']['value']
             else:
                 cur_set['entrant1Score'] = -1
-            
+
             if node['slots'][1]['standing'] is None:
                 cur_set['entrant2Score'] = -1
                 match_done = False
@@ -432,7 +434,7 @@ def show_head_to_head_filter(response, player2_name):
             cur_set['bracketId'] = node['phaseGroup']['id']
 
             sets.append(cur_set)
-    
+
     return sets
 
 # Filter for the show_event_by_game_size_dated function
@@ -445,7 +447,7 @@ def show_event_by_game_size_dated_filter(response, size, videogame_id):
 
     if response['data']['tournaments']['nodes'] is None:
         return
-    
+
     events = []
 
     for node in response['data']['tournaments']['nodes']:
@@ -628,9 +630,9 @@ def bracket_show_entrants_filter(response):
 
     if response['data']['phaseGroup']['seeds']['nodes'] is None:
         return
-    
+
     entrants = []    # Need for return at the end
-    
+
     for node in response['data']['phaseGroup']['seeds']['nodes']:
         cur_entrant = {}
         cur_entrant['entrantId'] = node['entrant']['id']
@@ -668,7 +670,7 @@ def bracket_show_sets_filter(response):
         cur_set['entrant2Id'] = node['slots'][1]['entrant']['id']
         cur_set['entrant1Name'] = node['slots'][0]['entrant']['name']
         cur_set['entrant2Name'] = node['slots'][1]['entrant']['name']
-        
+
         # Next 2 if/else blocks make sure there's a result in, sometimes DQs are weird
         match_done = True
         if node['slots'][0]['standing'] is None:
@@ -678,7 +680,7 @@ def bracket_show_sets_filter(response):
             cur_set['entrant1Score'] = node['slots'][0]['standing']['stats']['score']['value']
         else:
             cur_set['entrant1Score'] = -1
-        
+
         if node['slots'][0]['standing'] is None:
             cur_set['entrant2Score'] = -1
             match_done = False
@@ -712,7 +714,7 @@ def bracket_show_sets_filter(response):
                 cur_player['playerId'] = user['player']['id']
                 cur_player['playerTag'] = user['player']['gamerTag']
                 players.append(cur_player)
-            
+
             cur_set['entrant' + str(j+1) + 'Players'] = players
 
         sets.append(cur_set) # Adding that specific set onto the large list of sets
@@ -740,7 +742,7 @@ def player_show_info_filter(response):
         player['country'] = None
         player['state'] = None
         player['city'] = None
-        
+
     player['rankings'] = response['data']['player']['rankings']
 
     return player
@@ -821,7 +823,7 @@ def league_show_schedule_filter(response):
 
     if response['data']['league']['events']['nodes'] is None:
         return
-    
+
     events = []
 
     for node in response['data']['league']['events']['nodes']:
@@ -834,7 +836,7 @@ def league_show_schedule_filter(response):
         cur_event['tournamentId'] = node['tournament']['id']
         cur_event['tournamentName'] = node['tournament']['name']
         cur_event['tournamentSlug'] = node['tournament']['slug'].split('/')[-1]
-        
+
         events.append(cur_event)
 
     return events
