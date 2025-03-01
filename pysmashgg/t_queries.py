@@ -11,7 +11,7 @@ PLAYER_ID_QUERY = """query EventEntrants($eventId: ID!, $name: String!) {
         participants {
           gamerTag
           player {
-            id 
+            id
           }
         }
       }
@@ -100,6 +100,7 @@ SHOW_SETS_QUERY = """query EventSets($eventId: ID!, $page: Int!) {
     name
     sets(page: $page, perPage: 18, sortType: STANDARD) {
       nodes {
+        round
         fullRoundText
         games {
           winnerId
@@ -131,7 +132,7 @@ SHOW_SETS_QUERY = """query EventSets($eventId: ID!, $page: Int!) {
               player {
                 id
                 gamerTag
-                
+
               }
             }
           }
@@ -139,6 +140,7 @@ SHOW_SETS_QUERY = """query EventSets($eventId: ID!, $page: Int!) {
         phaseGroup {
           id
           phase {
+            phaseOrder
             name
           }
         }
